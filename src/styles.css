@@ -1,0 +1,86 @@
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #271841;
+  background: #f8f6fc;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid #1497cf; outline-offset: 3px; }
+
+.app { display: flex; min-height: 100vh; }
+.menu-lateral { width: 256px; flex-shrink: 0; background: #432178; color: #fff; padding: 29px 20px; display: flex; flex-direction: column; gap: 42px; }
+.marca { display: flex; align-items: center; gap: 9px; font-size: 20px; font-weight: 800; letter-spacing: -.7px; white-space: nowrap; }
+.marca > span:last-child > span { color: #b9a0f3; }
+.marca-simbolo { display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid #e9dcff; border-radius: 12px; font-size: 23px; }
+.menu-lateral nav { display: grid; gap: 8px; }
+.menu-item { border: 0; color: #f6efff; background: transparent; text-align: left; padding: 13px 12px; border-radius: 12px; display: flex; align-items: center; gap: 13px; font-weight: 600; }
+.menu-item:hover, .menu-item.selecionado { background: #6c45aa; color: #fff; }
+.menu-icone { font-size: 24px; width: 30px; text-align: center; line-height: 1; }
+.menu-rodape { margin-top: auto; color: #d7c3f2; font-size: 13px; padding: 0 12px; }
+.area-principal { min-width: 0; flex: 1; }
+.topo { height: 82px; background: #fff; border-bottom: 1px solid #e9e3f2; display: flex; align-items: center; justify-content: space-between; padding: 0 5.5%; }
+.topo-titulo { font-weight: 800; font-size: 17px; color: #39206d; }
+.topo-info { font-size: 13px; color: #6f6284; }
+.conteudo { max-width: 1320px; margin: 0 auto; padding: 42px 5.5% 64px; }
+.destaque { min-height: 332px; background: linear-gradient(120deg, #fff 12%, #f1e7ff 100%); border: 1px solid #e9dcff; border-radius: 24px; padding: 48px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; overflow: hidden; }
+.sobrelinha { text-transform: uppercase; letter-spacing: 1.8px; font-size: 12px; font-weight: 800; color: #683ba6; margin: 0 0 13px; }
+h1 { font-size: clamp(30px, 3.6vw, 48px); max-width: 650px; line-height: 1.12; letter-spacing: -1.8px; color: #301858; margin: 0; }
+.descricao { font-size: 16px; line-height: 1.7; color: #625775; max-width: 660px; margin: 18px 0 24px; }
+.botao-principal { background: #6733a2; border: 1px solid #6733a2; color: #fff; border-radius: 12px; padding: 14px 21px; font-weight: 700; display: inline-flex; align-items: center; gap: 18px; }
+.botao-principal:hover { background: #4d2087; }
+.arte-destaque { position: relative; min-height: 225px; }
+.arte-circulo { border-radius: 50%; position: absolute; }
+.circulo-um { width: 250px; height: 250px; right: 7%; top: -8%; background: #dbcbfb; }
+.circulo-dois { width: 160px; height: 160px; right: 34%; bottom: -34%; background: #b7dcf5; }
+.arte-cartao { position: absolute; width: 92px; height: 92px; display: grid; place-items: center; font-size: 40px; font-weight: 800; border-radius: 24px; box-shadow: 0 14px 35px #3d256029; background: #fff; }
+.cartao-um { top: 21%; left: 6%; color: #6b37af; transform: rotate(-14deg); }
+.cartao-dois { top: 9%; right: 12%; color: #168e78; transform: rotate(12deg); }
+.cartao-tres { bottom: 2%; right: 32%; color: #2486cc; transform: rotate(5deg); }
+.titulo-bloco { margin: 38px 0 20px; }
+.titulo-bloco h2 { margin: 0 0 7px; color: #35205a; font-size: 26px; }
+.titulo-bloco p { margin: 0; color: #776a89; }
+.grade-recursos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.grade-dupla { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 30px; }
+.recurso { border: 1px solid #e6def0; background: #fff; border-radius: 20px; padding: 26px; min-height: 235px; display: flex; flex-direction: column; align-items: flex-start; }
+.recurso-icone { display: grid; place-items: center; width: 55px; height: 55px; font-size: 29px; border-radius: 14px; font-weight: 700; }
+.recurso-icone.lilas { background: #eee1ff; color: #683ba6; }
+.recurso-icone.azul { background: #e0f2ff; color: #2175b0; }
+.recurso-icone.verde { background: #e1f6ed; color: #168e78; }
+.recurso h3, .recurso h2 { font-size: 19px; line-height: 1.25; margin: 20px 0 10px; color: #392063; }
+.recurso p { color: #6e657b; line-height: 1.55; margin: 0 0 20px; font-size: 14px; }
+.link-acao { padding: 0; margin-top: auto; border: 0; color: #6733a2; background: transparent; font-weight: 800; }
+.link-acao:hover { text-decoration: underline; }
+.pagina-secao { max-width: 1010px; }
+.etiqueta { color: #5b4183; background: #f3ecff; border-radius: 50px; font-weight: 700; font-size: 12px; padding: 9px 13px; margin-top: auto; }
+.lista-rotina { list-style: none; display: grid; gap: 12px; padding: 0; margin: 30px 0; max-width: 680px; }
+.lista-rotina li { display: flex; gap: 16px; align-items: center; padding: 17px; border: 1px solid #e7dff0; background: #fff; border-radius: 14px; font-weight: 700; }
+.lista-rotina li span { background: #eee1ff; color: #57318b; border-radius: 10px; width: 40px; height: 40px; display: grid; place-items: center; }
+.aviso { max-width: 650px; display: flex; gap: 18px; align-items: center; padding: 24px; background: #fff; border: 1px solid #e8def1; border-radius: 18px; margin-top: 28px; }
+.aviso span { font-size: 34px; color: #7345b7; }
+.aviso p { margin: 0; line-height: 1.6; color: #645777; }
+
+@media (max-width: 1050px) {
+  .menu-lateral { width: 216px; padding: 26px 14px; }
+  .marca { font-size: 17px; }
+  .destaque { padding: 34px; }
+  .grade-recursos { gap: 12px; }
+  .recurso { padding: 20px; }
+}
+@media (max-width: 760px) {
+  .app { display: block; }
+  .menu-lateral { width: 100%; gap: 16px; padding: 17px 16px; }
+  .menu-lateral nav { display: flex; overflow-x: auto; gap: 5px; }
+  .menu-item { flex-shrink: 0; padding: 11px; font-size: 13px; }
+  .menu-icone { font-size: 19px; width: 20px; }
+  .menu-rodape { display: none; }
+  .topo { height: 55px; padding: 0 20px; }
+  .conteudo { padding: 22px 17px 50px; }
+  .destaque { display: block; padding: 28px; }
+  .arte-destaque { display: none; }
+  h1 { letter-spacing: -.9px; font-size: 32px; }
+  .grade-recursos, .grade-dupla { grid-template-columns: 1fr; }
+  .recurso { min-height: 205px; }
+}
