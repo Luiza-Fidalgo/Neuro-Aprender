@@ -84,3 +84,127 @@ h1 { font-size: clamp(30px, 3.6vw, 48px); max-width: 650px; line-height: 1.12; l
   .grade-recursos, .grade-dupla { grid-template-columns: 1fr; }
   .recurso { min-height: 205px; }
 }
+
+
+/* Atividades e rotina */
+.jogo-container, .rotina-container {
+  margin-top: 30px;
+  background: #fff;
+  border: 1px solid #e7def2;
+  border-radius: 22px;
+  padding: 28px;
+}
+
+.jogo-cabecalho, .rotina-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.jogo-cabecalho h2, .rotina-topo h2 {
+  font-size: 26px;
+  margin: 0 0 10px;
+  color: #35205a;
+}
+
+.jogo-cabecalho p:not(.sobrelinha), .rotina-topo p:not(.sobrelinha) {
+  margin: 0;
+  line-height: 1.6;
+  color: #655a76;
+  max-width: 650px;
+}
+
+.dificuldade { display: grid; gap: 7px; min-width: 155px; }
+.dificuldade label { font-size: 13px; font-weight: 700; color: #49356b; }
+.dificuldade select {
+  border: 1px solid #c8b6e2;
+  border-radius: 10px;
+  background: #fff;
+  color: #392063;
+  padding: 11px;
+  font: inherit;
+}
+
+.jogo-progresso { display: grid; gap: 9px; margin: 26px 0 22px; color: #5b4679; font-weight: 700; font-size: 14px; }
+progress { width: 100%; height: 13px; accent-color: #7544b4; }
+.jogo-colunas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.jogo-coluna { background: #f9f7fd; border: 1px solid #ede5f6; border-radius: 18px; padding: 17px; }
+.jogo-coluna h3 { margin: 0 0 16px; font-size: 15px; color: #4a306c; }
+.jogo-opcoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cartao-jogo {
+  min-height: 146px;
+  border: 2px solid #e0d3ee;
+  background: #fff;
+  color: #342052;
+  border-radius: 16px;
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+  transition: border-color .12s, background-color .12s;
+}
+.cartao-jogo:not(:disabled):hover { border-color: #986bce; background: #fdfbff; }
+.cartao-jogo.escolhido { border-color: #6932a9; background: #f1e6ff; box-shadow: 0 0 0 2px #d4b4f4; }
+.cartao-jogo.resolvido { border-color: #6da28c; background: #eaf7ee; color: #275944; opacity: 1; cursor: default; }
+.figura-jogo { width: 69px; height: 69px; flex-shrink: 0; }
+.selo-par { font-size: 11px; color: #285a44; }
+.jogo-rodape, .rotina-rodape { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 22px; }
+.mensagem-jogo { color: #4c3b69; line-height: 1.5; font-weight: 600; margin: 0; }
+.mensagem-jogo.concluido { color: #266548; }
+.botao-secundario { border: 1px solid #7242ab; background: #fff; color: #59308b; padding: 12px 18px; border-radius: 11px; font-weight: 800; flex-shrink: 0; }
+.botao-secundario:hover { background: #f4eafd; }
+.aviso-construcao { margin-top: 20px; border: 1px solid #e7def2; background: #f5effc; color: #5e4c74; padding: 20px 22px; border-radius: 15px; line-height: 1.6; }
+.aviso-construcao strong { color: #473064; }
+
+.contador-rotina { white-space: nowrap; padding: 12px 16px; background: #f2e9ff; color: #59318e; border-radius: 12px; font-weight: 800; }
+.rotina-progresso { margin: 25px 0 15px; }
+.etapas-rotina { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.etapa-botao {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 2px solid #e8e0f0;
+  border-radius: 15px;
+  padding: 14px 18px;
+  color: #36234f;
+}
+.etapa-botao:not(:disabled):hover { border-color: #a381d0; }
+.etapa-botao:disabled { cursor: not-allowed; opacity: .65; }
+.etapa-botao.etapa-concluida { background: #edf8f1; border-color: #8fbda5; }
+.etapa-numero { width: 44px; height: 44px; background: #eee3fd; color: #56318a; border-radius: 12px; display: grid; place-items: center; font-size: 19px; font-weight: 800; flex-shrink: 0; }
+.etapa-concluida .etapa-numero { background: #c4e8d2; color: #216240; }
+.etapa-texto { display: grid; gap: 5px; }
+.etapa-texto strong { font-size: 16px; }
+.etapa-texto small { font-size: 13px; font-weight: 400; color: #6d617a; }
+.etapa-estado { margin-left: auto; color: #6a5685; font-size: 13px; font-weight: 700; text-align: right; }
+.etapa-concluida .etapa-estado { color: #286749; }
+.rotina-acoes { display: flex; align-items: center; gap: 10px; }
+.botao-texto { border: 0; background: none; color: #5b3b8f; font-weight: 700; padding: 10px; }
+.botao-texto:hover { text-decoration: underline; }
+.mensagem-rotina { margin: 0; color: #5d4d72; font-size: 13px; max-width: 370px; line-height: 1.5; }
+.nota-demonstracao { font-size: 12px; color: #766985; margin: 20px 0 0; }
+
+@media (max-width: 940px) {
+  .jogo-cabecalho, .rotina-topo { flex-wrap: wrap; }
+  .jogo-rodape, .rotina-rodape { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 560px) {
+  .jogo-container, .rotina-container { padding: 18px 13px; }
+  .jogo-colunas { gap: 9px; }
+  .jogo-coluna { padding: 8px; }
+  .jogo-coluna h3 { font-size: 12px; }
+  .jogo-opcoes { grid-template-columns: 1fr; gap: 9px; }
+  .cartao-jogo { min-height: 115px; }
+  .figura-jogo { width: 52px; height: 52px; }
+  .etapa-botao { padding: 11px 10px; gap: 9px; }
+  .etapa-numero { width: 35px; height: 35px; }
+  .etapa-estado { max-width: 86px; font-size: 11px; }
+  .rotina-acoes { flex-wrap: wrap; }
+}

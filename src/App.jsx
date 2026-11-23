@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import Associacao from './Associacao'
+import RotinaVisual from './RotinaVisual'
 
 const paginas = [
   { nome: 'Início', simbolo: '⌂' },
@@ -10,14 +12,14 @@ const paginas = [
 const recursos = [
   {
     titulo: 'Atividades pedagógicas',
-    texto: 'Propostas de associação e sequência para explorar diferentes habilidades.',
+    texto: 'Jogo de associação de figuras, com níveis ajustáveis e feedback acolhedor.',
     pagina: 'Atividades',
     simbolo: '✦',
     classe: 'lilas'
   },
   {
     titulo: 'Rotinas visuais',
-    texto: 'Etapas do cotidiano organizadas com imagens e instruções simples.',
+    texto: 'Rotina de chegada interativa, com pausa e acompanhamento das etapas.',
     pagina: 'Rotinas visuais',
     simbolo: '▦',
     classe: 'azul'
@@ -30,8 +32,6 @@ const recursos = [
     classe: 'verde'
   }
 ]
-
-const rotinaExemplo = ['Chegar', 'Guardar a mochila', 'Lavar as mãos', 'Começar a atividade']
 
 function App() {
   const [paginaAtual, setPaginaAtual] = useState('Início')
@@ -69,7 +69,7 @@ function App() {
       <div className="area-principal">
         <header className="topo">
           <span className="topo-titulo">NeuroAprender</span>
-          <span className="topo-info">Protótipo inicial</span>
+          <span className="topo-info">Versão de desenvolvimento</span>
         </header>
 
         <main className="conteudo">
@@ -115,23 +115,19 @@ function App() {
           {paginaAtual === 'Atividades' && (
             <section className="pagina-secao">
               <p className="sobrelinha">Atividades pedagógicas</p>
-              <h1>Atividades para explorar e aprender.</h1>
-              <p className="descricao">Os primeiros jogos planejados são associação de imagens e sequência lógica. Nesta etapa, a área apresenta apenas a organização inicial.</p>
-              <div className="grade-dupla">
-                <article className="recurso"><span className="recurso-icone lilas" aria-hidden="true">✦</span><h2>Associação de imagens</h2><p>Relacionar figuras iguais e elementos do cotidiano.</p><span className="etiqueta">Em planejamento</span></article>
-                <article className="recurso"><span className="recurso-icone azul" aria-hidden="true">↔</span><h2>Sequência lógica</h2><p>Organizar acontecimentos e imagens na ordem correta.</p><span className="etiqueta">Em planejamento</span></article>
-              </div>
+              <h1>Aprender com atividades visuais.</h1>
+              <p className="descricao">Começamos pelo jogo de associação de imagens. As propostas podem ser adaptadas ao ritmo de cada criança, sem cronômetro ou penalidades.</p>
+              <Associacao />
+              <div className="aviso-construcao"><strong>Próxima atividade: sequência lógica.</strong> Essa proposta ainda está sendo desenvolvida.</div>
             </section>
           )}
 
           {paginaAtual === 'Rotinas visuais' && (
             <section className="pagina-secao">
               <p className="sobrelinha">Rotinas visuais</p>
-              <h1>Pequenas etapas, mais previsibilidade.</h1>
-              <p className="descricao">Exemplo de uma sequência de chegada. A criação e edição das rotinas serão desenvolvidas nas próximas etapas.</p>
-              <ol className="lista-rotina">
-                {rotinaExemplo.map((etapa, indice) => <li key={etapa}><span>{indice + 1}</span>{etapa}</li>)}
-              </ol>
+              <h1>Uma etapa de cada vez.</h1>
+              <p className="descricao">Use esta rotina de chegada como exemplo. As marcações são temporárias e não identificam nenhuma criança.</p>
+              <RotinaVisual />
             </section>
           )}
 
