@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Associacao from './Associacao'
+import SequenciaLogica from './SequenciaLogica'
 import RotinaVisual from './RotinaVisual'
 
 const paginas = [
@@ -12,7 +13,7 @@ const paginas = [
 const recursos = [
   {
     titulo: 'Atividades pedagógicas',
-    texto: 'Jogo de associação de figuras, com níveis ajustáveis e feedback acolhedor.',
+    texto: 'Jogos de associação de figuras e sequência lógica, com níveis ajustáveis.',
     pagina: 'Atividades',
     simbolo: '✦',
     classe: 'lilas'
@@ -35,6 +36,7 @@ const recursos = [
 
 function App() {
   const [paginaAtual, setPaginaAtual] = useState('Início')
+  const [atividadeAtual, setAtividadeAtual] = useState('associacao')
 
   function abrirPagina(nome) {
     setPaginaAtual(nome)
@@ -116,9 +118,16 @@ function App() {
             <section className="pagina-secao">
               <p className="sobrelinha">Atividades pedagógicas</p>
               <h1>Aprender com atividades visuais.</h1>
-              <p className="descricao">Começamos pelo jogo de associação de imagens. As propostas podem ser adaptadas ao ritmo de cada criança, sem cronômetro ou penalidades.</p>
-              <Associacao />
-              <div className="aviso-construcao"><strong>Próxima atividade: sequência lógica.</strong> Essa proposta ainda está sendo desenvolvida.</div>
+              <p className="descricao">Explore dois jogos visuais com dificuldade ajustável, sem cronômetro ou penalidades. Cada atividade pode ser mediada por um profissional.</p>
+              <div className="seletor-atividades" role="group" aria-label="Escolha a atividade pedagógica">
+                <button type="button" aria-pressed={atividadeAtual === 'associacao'} onClick={() => setAtividadeAtual('associacao')}>
+                  Associação de figuras
+                </button>
+                <button type="button" aria-pressed={atividadeAtual === 'sequencia'} onClick={() => setAtividadeAtual('sequencia')}>
+                  Sequência lógica
+                </button>
+              </div>
+              {atividadeAtual === 'associacao' ? <Associacao /> : <SequenciaLogica />}
             </section>
           )}
 
