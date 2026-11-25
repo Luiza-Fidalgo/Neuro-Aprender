@@ -21,16 +21,16 @@ function formatarData(data) {
   return partes.length === 3 ? partes.reverse().join('/') : data
 }
 
-export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, sessoes, onAdicionar, onExcluir, onAbrirPerfis }) {
+export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, sessoes, onAdicionar, onExcluir, onAbrirPerfis, carregando }) {
   const [data, setData] = useState(dataLocal)
   const [atividade, setAtividade] = useState(atividades[0])
   const [participacao, setParticipacao] = useState(participacoes[0])
   const [observacao, setObservacao] = useState('')
   const [mensagem, setMensagem] = useState('')
 
-  const registros = sessoes.filter((sessao) => sessao.perfilId === selecionadoId).slice().reverse()
+  const registros = sessoes.filter((sessao) => sessao.perfilId === selecionadoId)
 
-  function salvar(evento) {
+  async function salvar(evento) {
     evento.preventDefault()
     if (!perfis.some((perfil) => perfil.id === selecionadoId)) {
       setMensagem('Selecione um perfil antes de registrar uma sessão.')
@@ -40,9 +40,13 @@ export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, se
       setMensagem('Informe a data da sessão.')
       return
     }
-    onAdicionar({ perfilId: selecionadoId, data, atividade, participacao, observacao: observacao.trim() })
-    setObservacao('')
-    setMensagem('Registro adicionado à demonstração. Ele será apagado ao recarregar a página.')
+    try {
+      await onAdicionar({ perfilId: selecionadoId, data, atividade, participacao, observacao: observacao.trim() })
+      setObservacao('')
+      setMensagem('Registro salvo com sucesso.')
+    } catch (erro) {
+      setMensagem(erro.message)
+    }
   }
 
   return (
@@ -55,8 +59,8 @@ export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, se
       </p>
 
       <div className="alerta-privacidade" role="note">
-        <strong>Registros temporários</strong>
-        <p>As informações não são salvas, compartilhadas ou enviadas a um servidor. Use apenas dados fictícios até a implementação de autenticação e armazenamento seguro.</p>
+        <strong>Área restrita — testes</strong>
+        <p>Os registros são armazenados no servidor após autenticação. Use apenas dados fictícios até a validação de segurança e privacidade.</p>
       </div>
 
       {perfis.length === 0 ? (
@@ -117,10 +121,12 @@ export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, se
               </form>
 
               <div className="secao-lista-topo">
-                <h2>Histórico nesta demonstração</h2>
+                <h2>Histórico de registros</h2>
                 <span>{registros.length} {registros.length === 1 ? 'registro' : 'registros'}</span>
               </div>
-              {registros.length === 0 ? (
+              {carregando ? (
+                <div className="estado-vazio">Carregando registros...</div>
+              ) : registros.length === 0 ? (
                 <div className="estado-vazio">
                   <strong>Nenhuma sessão registrada</strong>
                   <p>Preencha o formulário para criar o primeiro registro de exemplo.</p>
@@ -134,7 +140,14 @@ export default function Acompanhamento({ perfis, selecionadoId, onSelecionar, se
                           <strong>{sessao.atividade}</strong>
                           <small>{formatarData(sessao.data)}</small>
                         </div>
-                        <button className="botao-texto" type="button" onClick={() => onExcluir(sessao.id)}>Excluir</button>
+                        <button className="botao-texto" type="button" onClick={async () => {
+                          try {
+                            await onExcluir(sessao.id)
+                            setMensagem('Registro excluído.')
+                          } catch (erro) {
+                            setMensagem(erro.message)
+                          }
+                        }}>Excluir</button>
                       </div>
                       <span className="registro-participacao">{sessao.participacao}</span>
                       {sessao.observacao && <p>{sessao.observacao}</p>}

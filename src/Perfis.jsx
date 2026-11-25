@@ -5,7 +5,7 @@ export default function Perfis({ perfis, selecionadoId, onAdicionar, onSeleciona
   const [aviso, setAviso] = useState('')
   const [confirmando, setConfirmando] = useState(null)
 
-  function adicionar(evento) {
+  async function adicionar(evento) {
     evento.preventDefault()
     const valor = codigo.trim().replace(/\s+/g, ' ')
     if (valor.length < 2 || valor.length > 30) {
@@ -16,15 +16,23 @@ export default function Perfis({ perfis, selecionadoId, onAdicionar, onSeleciona
       setAviso('Já existe um perfil com esse identificador.')
       return
     }
-    onAdicionar(valor)
-    setCodigo('')
-    setAviso('Perfil adicionado para esta demonstração.')
+    try {
+      await onAdicionar(valor)
+      setCodigo('')
+      setAviso('Perfil cadastrado com sucesso.')
+    } catch (erro) {
+      setAviso(erro.message)
+    }
   }
 
-  function excluir(id) {
-    onRemover(id)
-    setConfirmando(null)
-    setAviso('Perfil e registros relacionados foram removidos desta demonstração.')
+  async function excluir(id) {
+    try {
+      await onRemover(id)
+      setConfirmando(null)
+      setAviso('Perfil e registros relacionados foram excluídos.')
+    } catch (erro) {
+      setAviso(erro.message)
+    }
   }
 
   return (
@@ -32,13 +40,13 @@ export default function Perfis({ perfis, selecionadoId, onAdicionar, onSeleciona
       <p className="sobrelinha">Perfis de acompanhamento</p>
       <h1>Organize os perfis da atividade.</h1>
       <p className="descricao">
-        Crie identificadores fictícios para simular o acompanhamento. Não utilize nome completo,
-        diagnóstico, endereço ou outras informações pessoais de crianças nesta versão.
+        Cadastre apenas identificadores fictícios para testar o acompanhamento. Não utilize nomes completos,
+        diagnósticos, endereços ou informações pessoais de crianças nesta fase.
       </p>
 
       <div className="alerta-privacidade" role="note">
-        <strong>Modo de demonstração</strong>
-        <p>Os perfis e registros ficam apenas na memória desta aba e desaparecem ao recarregar a página. Ainda não há acesso protegido ou banco de dados.</p>
+        <strong>Acesso restrito — testes</strong>
+        <p>Os perfis ficam armazenados no banco de dados configurado no servidor. Utilize apenas dados fictícios até a validação da implantação e segurança.</p>
       </div>
 
       <form className="formulario-cartao" onSubmit={adicionar}>
@@ -61,7 +69,7 @@ export default function Perfis({ perfis, selecionadoId, onAdicionar, onSeleciona
       </form>
 
       <div className="secao-lista-topo">
-        <h2>Perfis cadastrados nesta sessão</h2>
+        <h2>Perfis cadastrados</h2>
         <span>{perfis.length} {perfis.length === 1 ? 'perfil' : 'perfis'}</span>
       </div>
 
@@ -74,7 +82,7 @@ export default function Perfis({ perfis, selecionadoId, onAdicionar, onSeleciona
       ) : (
         <ul className="lista-perfis">
           {perfis.map((perfil) => {
-            const quantidade = sessoes.filter((sessao) => sessao.perfilId === perfil.id).length
+            const quantidade = perfil.quantidade ?? 0
             return (
               <li className="perfil-item" key={perfil.id}>
                 <span className="perfil-avatar" aria-hidden="true">{perfil.codigo.charAt(0).toUpperCase()}</span>

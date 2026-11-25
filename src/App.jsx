@@ -1,9 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Associacao from './Associacao'
 import SequenciaLogica from './SequenciaLogica'
 import RotinaVisual from './RotinaVisual'
 import Perfis from './Perfis'
 import Acompanhamento from './Acompanhamento'
+import Login from './Login'
+import * as api from './api'
 
 const paginas = [
   { nome: 'Início', simbolo: '⌂' },
@@ -29,8 +31,8 @@ const recursos = [
     classe: 'azul'
   },
   {
-    titulo: 'Perfis de exemplo',
-    texto: 'Crie identificadores fictícios e organize os registros pedagógicos temporários.',
+    titulo: 'Perfis de acompanhamento',
+    texto: 'Organize perfis fictícios para testes com acesso restrito.',
     pagina: 'Perfis',
     simbolo: '♙',
     classe: 'verde'
@@ -50,32 +52,133 @@ function App() {
   const [perfis, setPerfis] = useState([])
   const [sessoes, setSessoes] = useState([])
   const [selecionadoId, setSelecionadoId] = useState('')
-  const proximoId = useRef(1)
+  const [autenticado, setAutenticado] = useState(false)
+  const [verificando, setVerificando] = useState(true)
+  const [erroServidor, setErroServidor] = useState('')
+  const [carregando, setCarregando] = useState(false)
+
+  useEffect(() => {
+    let ativo = true
+    api.setUnauthorizedHandler(() => {
+      setAutenticado(false)
+      setPerfis([])
+      setSessoes([])
+      setSelecionadoId('')
+    })
+    async function iniciar() {
+      try {
+        const sessao = await api.getSession()
+        if (ativo && sessao.authenticated) {
+          const resposta = await api.listProfiles()
+          if (!ativo) return
+          setPerfis(resposta.profiles.map(normalizarPerfil))
+          setAutenticado(true)
+        }
+      } catch (erro) {
+        if (ativo) setErroServidor(erro.message)
+      } finally {
+        if (ativo) setVerificando(false)
+      }
+    }
+    iniciar()
+    return () => { ativo = false; api.setUnauthorizedHandler(null) }
+  }, [])
+
+  function normalizarPerfil(item) {
+    return { id: String(item.id), codigo: item.code, quantidade: Number(item.records_count || 0) }
+  }
 
   function abrirPagina(nome) {
     setPaginaAtual(nome)
+    setErroServidor('')
     window.scrollTo({ top: 0, behavior: 'auto' })
   }
 
-  function adicionarPerfil(codigo) {
-    const id = 'perfil-' + proximoId.current++
-    setPerfis((anteriores) => [...anteriores, { id, codigo }])
-    setSelecionadoId(id)
+  async function entrar(usuario, senha) {
+    await api.login(usuario, senha)
+    try {
+      const resposta = await api.listProfiles()
+      setPerfis(resposta.profiles.map(normalizarPerfil))
+      setAutenticado(true)
+      setErroServidor('')
+    } catch (erro) {
+      api.resetSession()
+      setAutenticado(false)
+      throw erro
+    }
   }
 
-  function removerPerfil(id) {
-    setPerfis((anteriores) => anteriores.filter((perfil) => perfil.id !== id))
-    setSessoes((anteriores) => anteriores.filter((sessao) => sessao.perfilId !== id))
+  async function sair() {
+    try { await api.logout() }
+    catch (erro) {
+      setErroServidor(erro.message)
+      return
+    }
+    api.resetSession()
+    setAutenticado(false)
+    setPerfis([])
+    setSessoes([])
+    setSelecionadoId('')
+    abrirPagina('Início')
+  }
+
+  async function adicionarPerfil(codigo) {
+    const novo = await api.createProfile(codigo)
+    const perfil = normalizarPerfil(novo)
+    setPerfis(anteriores => [perfil, ...anteriores])
+    await selecionarPerfil(perfil.id)
+  }
+
+  async function removerPerfil(id) {
+    await api.deleteProfile(id)
+    setPerfis(anteriores => anteriores.filter(perfil => perfil.id !== id))
+    setSessoes(anteriores => anteriores.filter(sessao => sessao.perfilId !== id))
     if (selecionadoId === id) setSelecionadoId('')
   }
 
-  function adicionarSessao(registro) {
-    const id = 'sessao-' + proximoId.current++
-    setSessoes((anteriores) => [...anteriores, { ...registro, id }])
+  async function selecionarPerfil(id) {
+    setSelecionadoId(id)
+    setSessoes([])
+    if (!id) return
+    setCarregando(true)
+    setErroServidor('')
+    try {
+      const resposta = await api.listRecords(id)
+      setSessoes(resposta.records.map(item => ({
+        id: String(item.id), perfilId: String(item.profile_id),
+        data: item.session_date, atividade: item.activity,
+        participacao: item.participation, observacao: item.notes
+      })))
+    } catch (erro) {
+      setErroServidor(erro.message)
+    } finally {
+      setCarregando(false)
+    }
   }
 
-  function excluirSessao(id) {
-    setSessoes((anteriores) => anteriores.filter((sessao) => sessao.id !== id))
+  async function adicionarSessao(registro) {
+    const resposta = await api.createRecord({
+      profileId: Number(registro.perfilId),
+      date: registro.data,
+      activity: registro.atividade,
+      participation: registro.participacao,
+      notes: registro.observacao
+    })
+    setSessoes(anteriores => [{
+      ...registro, id: String(resposta.id)
+    }, ...anteriores])
+    setPerfis(anteriores => anteriores.map(perfil =>
+      perfil.id === registro.perfilId ? { ...perfil, quantidade: perfil.quantidade + 1 } : perfil))
+  }
+
+  async function excluirSessao(id) {
+    await api.deleteRecord(id)
+    const sessao = sessoes.find(item => item.id === id)
+    setSessoes(anteriores => anteriores.filter(item => item.id !== id))
+    if (sessao) {
+      setPerfis(anteriores => anteriores.map(perfil =>
+        perfil.id === sessao.perfilId ? { ...perfil, quantidade: Math.max(0, perfil.quantidade - 1) } : perfil))
+    }
   }
 
   return (
@@ -105,10 +208,11 @@ function App() {
       <div className="area-principal">
         <header className="topo">
           <span className="topo-titulo">NeuroAprender</span>
-          <span className="topo-info">Versão de desenvolvimento</span>
+          <span className="topo-info">{autenticado ? <button type="button" className="botao-texto" onClick={sair}>Sair da conta</button> : 'Versão de desenvolvimento'}</span>
         </header>
 
         <main className="conteudo">
+          {erroServidor && <div className="alerta-privacidade" role="alert">{erroServidor}</div>}
           {paginaAtual === 'Início' && (
             <>
               <section className="destaque">
@@ -144,7 +248,7 @@ function App() {
                   </article>
                 ))}
               </section>
-              <p className="nota-inicio">Os perfis e registros desta versão são temporários e devem ser usados somente com dados fictícios.</p>
+              <p className="nota-inicio">O acompanhamento exige login e configuração do servidor. Durante os testes, utilize somente dados fictícios.</p>
             </>
           )}
 
@@ -174,28 +278,29 @@ function App() {
             </section>
           )}
 
-          {paginaAtual === 'Perfis' && (
+          {paginaAtual === 'Perfis' && (verificando ? <div className="estado-vazio">Verificando acesso...</div> : !autenticado ? <Login onEntrar={entrar} /> : (
             <Perfis
               perfis={perfis}
               selecionadoId={selecionadoId}
               sessoes={sessoes}
               onAdicionar={adicionarPerfil}
-              onSelecionar={setSelecionadoId}
+              onSelecionar={selecionarPerfil}
               onRemover={removerPerfil}
             />
-          )}
+          ))}
 
-          {paginaAtual === 'Acompanhamento' && (
+          {paginaAtual === 'Acompanhamento' && (verificando ? <div className="estado-vazio">Verificando acesso...</div> : !autenticado ? <Login onEntrar={entrar} /> : (
             <Acompanhamento
               perfis={perfis}
               selecionadoId={selecionadoId}
               sessoes={sessoes}
-              onSelecionar={setSelecionadoId}
+              onSelecionar={selecionarPerfil}
+              carregando={carregando}
               onAdicionar={adicionarSessao}
               onExcluir={excluirSessao}
               onAbrirPerfis={() => abrirPagina('Perfis')}
             />
-          )}
+          ))}
         </main>
       </div>
     </div>
