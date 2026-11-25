@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Associacao from './Associacao'
 import SequenciaLogica from './SequenciaLogica'
 import RotinaVisual from './RotinaVisual'
+import Perfis from './Perfis'
+import Acompanhamento from './Acompanhamento'
 
 const paginas = [
   { nome: 'Início', simbolo: '⌂' },
   { nome: 'Atividades', simbolo: '✦' },
   { nome: 'Rotinas visuais', simbolo: '▦' },
+  { nome: 'Perfis', simbolo: '♙' },
   { nome: 'Acompanhamento', simbolo: '▥' }
 ]
 
@@ -26,21 +29,53 @@ const recursos = [
     classe: 'azul'
   },
   {
+    titulo: 'Perfis de exemplo',
+    texto: 'Crie identificadores fictícios e organize os registros pedagógicos temporários.',
+    pagina: 'Perfis',
+    simbolo: '♙',
+    classe: 'verde'
+  },
+  {
     titulo: 'Acompanhamento',
-    texto: 'Um espaço para organizar futuramente os registros das sessões.',
+    texto: 'Registre atividades, participação e observações sem guardar dados pessoais.',
     pagina: 'Acompanhamento',
     simbolo: '▥',
-    classe: 'verde'
+    classe: 'lilas'
   }
 ]
 
 function App() {
   const [paginaAtual, setPaginaAtual] = useState('Início')
   const [atividadeAtual, setAtividadeAtual] = useState('associacao')
+  const [perfis, setPerfis] = useState([])
+  const [sessoes, setSessoes] = useState([])
+  const [selecionadoId, setSelecionadoId] = useState('')
+  const proximoId = useRef(1)
 
   function abrirPagina(nome) {
     setPaginaAtual(nome)
     window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+
+  function adicionarPerfil(codigo) {
+    const id = 'perfil-' + proximoId.current++
+    setPerfis((anteriores) => [...anteriores, { id, codigo }])
+    setSelecionadoId(id)
+  }
+
+  function removerPerfil(id) {
+    setPerfis((anteriores) => anteriores.filter((perfil) => perfil.id !== id))
+    setSessoes((anteriores) => anteriores.filter((sessao) => sessao.perfilId !== id))
+    if (selecionadoId === id) setSelecionadoId('')
+  }
+
+  function adicionarSessao(registro) {
+    const id = 'sessao-' + proximoId.current++
+    setSessoes((anteriores) => [...anteriores, { ...registro, id }])
+  }
+
+  function excluirSessao(id) {
+    setSessoes((anteriores) => anteriores.filter((sessao) => sessao.id !== id))
   }
 
   return (
@@ -50,12 +85,11 @@ function App() {
           <span className="marca-simbolo" aria-hidden="true">N</span>
           <span>Neuro<span>Aprender</span></span>
         </div>
-
         <nav aria-label="Menu principal">
           {paginas.map((pagina) => (
             <button
               key={pagina.nome}
-              className={`menu-item ${paginaAtual === pagina.nome ? 'selecionado' : ''}`}
+              className={'menu-item ' + (paginaAtual === pagina.nome ? 'selecionado' : '')}
               onClick={() => abrirPagina(pagina.nome)}
               aria-current={paginaAtual === pagina.nome ? 'page' : undefined}
               type="button"
@@ -94,7 +128,6 @@ function App() {
                   <div className="arte-cartao cartao-tres">▦</div>
                 </div>
               </section>
-
               <div className="titulo-bloco">
                 <h2>Por onde começar?</h2>
                 <p>Escolha uma área para conhecer o projeto.</p>
@@ -102,7 +135,7 @@ function App() {
               <section className="grade-recursos" aria-label="Áreas do projeto">
                 {recursos.map((recurso) => (
                   <article className="recurso" key={recurso.pagina}>
-                    <span className={`recurso-icone ${recurso.classe}`} aria-hidden="true">{recurso.simbolo}</span>
+                    <span className={'recurso-icone ' + recurso.classe} aria-hidden="true">{recurso.simbolo}</span>
                     <h3>{recurso.titulo}</h3>
                     <p>{recurso.texto}</p>
                     <button className="link-acao" onClick={() => abrirPagina(recurso.pagina)} type="button">
@@ -111,6 +144,7 @@ function App() {
                   </article>
                 ))}
               </section>
+              <p className="nota-inicio">Os perfis e registros desta versão são temporários e devem ser usados somente com dados fictícios.</p>
             </>
           )}
 
@@ -140,12 +174,27 @@ function App() {
             </section>
           )}
 
+          {paginaAtual === 'Perfis' && (
+            <Perfis
+              perfis={perfis}
+              selecionadoId={selecionadoId}
+              sessoes={sessoes}
+              onAdicionar={adicionarPerfil}
+              onSelecionar={setSelecionadoId}
+              onRemover={removerPerfil}
+            />
+          )}
+
           {paginaAtual === 'Acompanhamento' && (
-            <section className="pagina-secao">
-              <p className="sobrelinha">Acompanhamento</p>
-              <h1>Um lugar para registrar cada avanço.</h1>
-              <div className="aviso"><span aria-hidden="true">▥</span><p>O registro das sessões e das observações pedagógicas será desenvolvido em uma próxima etapa.</p></div>
-            </section>
+            <Acompanhamento
+              perfis={perfis}
+              selecionadoId={selecionadoId}
+              sessoes={sessoes}
+              onSelecionar={setSelecionadoId}
+              onAdicionar={adicionarSessao}
+              onExcluir={excluirSessao}
+              onAbrirPerfis={() => abrirPagina('Perfis')}
+            />
           )}
         </main>
       </div>
