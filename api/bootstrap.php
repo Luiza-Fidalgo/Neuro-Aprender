@@ -61,7 +61,9 @@ function authenticated_user(): int {
 }
 
 function require_csrf(): void {
-    if (!hash_equals($_SESSION['csrf_token'] ?? '', $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '')) {
+    $expected = $_SESSION['csrf_token'] ?? null;
+    $received = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (!is_string($expected) || $expected === '' || !is_string($received) || !hash_equals($expected, $received)) {
         response(403, ['error' => 'Verificação de segurança inválida.']);
     }
 }

@@ -56,7 +56,7 @@ if ($method !== 'GET') {
 $db = database();
 
 if ($path === '/profiles' && $method === 'GET') {
-    $statement = $db->prepare('SELECT id, code FROM profiles WHERE user_id = ? ORDER BY id DESC');
+    $statement = $db->prepare('SELECT p.id, p.code, COUNT(r.id) AS records_count FROM profiles p LEFT JOIN session_records r ON r.profile_id = p.id WHERE p.user_id = ? GROUP BY p.id, p.code ORDER BY p.id DESC');
     $statement->execute([$userId]);
     response(200, ['profiles' => $statement->fetchAll()]);
 }

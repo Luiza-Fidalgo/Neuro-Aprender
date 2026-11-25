@@ -1,5 +1,5 @@
 Options -Indexes
 RewriteEngine On
-RewriteRule ^(bootstrap|config)\.php$ - [F,L]
+RewriteRule ^(bootstrap|config|config\.example)\.php$ - [F,L,NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [L]
